@@ -7,6 +7,7 @@ $location = $_GET['location'];
 $blueprints = json_decode(file_get_contents('http://sw-gaming.org/eve-service/blueprints.json'), true);
 // add price of all materials
 echo "<h2>" . getitemname($id) . "</h2>";
+echo "<h3>" . getlocationname($location) . "</h3>";
 echo "<table border=1><tr><th>id</th><th>name</th><th>single price</th><th>quantity</th><th>price</th></tr>";
 $price = 0;
 foreach ($blueprints[$id]["activities"]["manufacturing"]["materials"] as $material) {
@@ -46,6 +47,18 @@ function getitemname($itemid) {
 	    }
 	}
 	return $itemname;
+}
+
+// Get location name
+function getlocationname ($locationid) {
+	$locationnames = file_get_contents('http://sw-gaming.org/eve-service/locations.txt');
+	$locationnames= explode("\n", $locationnames);
+	foreach ($locationnames as $locationn) {
+	    if (explode("\t", $locationn)[0] == $locationid) {
+		$locationname = explode("\t", $itemn)[1];
+	    }
+	}
+	return $locationname;
 }
 
 ?>
