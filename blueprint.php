@@ -1,25 +1,51 @@
 <?php
-//header('Content-Type: application/json');
-
 // Get parameters from url
-$item = $_GET['item'];
-$quantity= $_GET['quantity'];
+$id = $_GET['id'];
+$location = $_GET['location'];
+
+// Get itemname
+$blueprints = json_decode(file_get_contents('http://sw-gaming.org/eve-service/blueprints.json'), true);
+// add price of all materials
+echo "<h2>" . getitemname($id) . "</h2>";
+echo "<table border=1><tr><th>id</th><th>name</th><th>single price</th><th>quantity</th><th>price</th></tr>";
+$price = 0;
+foreach ($blueprints[$id]["activities"]["manufacturing"]["materials"] as $material) {
+	$cur_price = bestprice($material["typeID"], $location);
+	$price = $price + $cur_price * $material["quantity"];
+	echo "<tr>";
+	echo "<td>" . $material["typeID"] . "</td>";
+	echo "<td>" . getitemname($material["typeID"]) . "</td>";
+	echo "<td>" . $cur_price . "</td>";
+	echo "<td>" . $material["quantity"] . "</td>";
+	echo "<td>" . $cur_price * $material["quantity"] . "</td>";
+	echo "</tr>";
+}
+echo "</table><br /><b>" . $price . "ISK</b>";
+
 
 // Determine best price for item
-$item_prices = json_decode(file_get_contents('https://esi.tech.ccp.is/latest/markets/10000002/orders/?datasource=tranquility&order_type=sell&type_id=' . $item), true);
-$bestprice = $item_prices[0];
-foreach ($item_prices as $price) {
-    if ($bestprice["price"] > $price["price"]) {
-        $bestprice = $price;
-    }
+function bestprice($itemid, $locationid) {
+	$item_prices = json_decode(file_get_contents('https://esi.tech.ccp.is/latest/markets/' . 
+	$locationid . '/orders/?datasource=tranquility&order_type=sell&type_id=' . $itemid), true);
+	$bestprice = $item_prices[0];
+	foreach ($item_prices as $price) {
+	    if ($bestprice["price"] > $price["price"]) {
+		$bestprice = $price;
+	    }
+	}
+	return $bestprice["price"];
 }
 
 // Get itemname
-$itemnames = file_get_contents('http://sw-gaming.org/eve-service/typeIDs.txt');
-$itemnames_array = explode("\t", $itemnames);
-
-// output
-echo $itemnames_array[0][2];
-echo $bestprice["price"];
+function getitemname($itemid) {
+	$itemnames = file_get_contents('http://sw-gaming.org/eve-service/typeIDs.txt');
+	$itemnames = explode("\n", $itemnames);
+	foreach ($itemnames as $itemn) {
+	    if (explode("\t", $itemn)[0] == $itemid) {
+		$itemname = explode("\t", $itemn)[1];
+	    }
+	}
+	return $itemname;
+}
 
 ?>
