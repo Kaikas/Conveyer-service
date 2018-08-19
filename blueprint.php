@@ -52,8 +52,9 @@ function getitemname($itemid) {
 // Get location name
 function getlocationname ($locationid) {
 	$locationnames = file_get_contents('http://sw-gaming.org/eve-service/locations.txt');
-	$locationnames= explode("\n", $locationnames);
+	$locationnames = explode("\n", $locationnames);
 	foreach ($locationnames as $locationn) {
+		echo $locationn;
 	    if (explode("\t", $locationn)[0] == $locationid) {
 		$locationname = explode("\t", $itemn)[1];
 	    }
