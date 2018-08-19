@@ -16,10 +16,14 @@ foreach ($item_prices as $price) {
 
 // Get itemname
 $itemnames = file_get_contents('http://sw-gaming.org/eve-service/typeIDs.txt');
-$itemnames_array = explode("\t", $itemnames);
+$itemnames = explode("\n", $itemnames);
+foreach ($itemnames as $itemn) {
+    if (explode("\t", $itemn)[0] == $item) {
+        $itemname = explode("\t", $itemn)[1];
+    }
+}
 
 // output
-echo $itemnames_array[0][2];
-echo $bestprice["price"];
+echo $itemname . ' ' . $bestprice["price"];
 
 ?>
