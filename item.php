@@ -3,10 +3,11 @@
 
 // Get parameters from url
 $item = $_GET['item'];
-$quantity= $_GET['quantity'];
+$location = $_GET['location'];
 
 // Determine best price for item
-$item_prices = json_decode(file_get_contents('https://esi.tech.ccp.is/latest/markets/10000002/orders/?datasource=tranquility&order_type=sell&type_id=' . $item), true);
+$item_prices = json_decode(file_get_contents('https://esi.tech.ccp.is/latest/markets/' . 
+$location . '/orders/?datasource=tranquility&order_type=sell&type_id=' . $item), true);
 $bestprice = $item_prices[0];
 foreach ($item_prices as $price) {
     if ($bestprice["price"] > $price["price"]) {
